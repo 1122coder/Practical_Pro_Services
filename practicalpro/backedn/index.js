@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({extended:true}))
 
 
 // MySQL connection pool
-const pool = mysql.createPool({
+const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '1999',
@@ -20,15 +20,6 @@ const pool = mysql.createPool({
 });
 
 
-app.get('/', (req, res)=>{
-  const sqlInsert= "INSERT INTO contacts(firstName, lastName, email, phone) VALUES('Kashif','Saeed', 'malik@gmail.com', '0312344552')";
-  pool.query(sqlInsert, (err, result)=>{
-    console.log("Table not modified",err );
-    console.log("Table added", result);
-    res.send("Inside table cpomtent");
-  })
-  
-})
 // Middleware to parse JSON
 app.use(express.json());
 
@@ -37,7 +28,7 @@ app.post('/api/contact', (req, res) => {
   const { firstName, lastName, email, phoneNumber } = req.body;
 
   // Create a new contact in the database
-  pool.query(
+  db.query(
     'INSERT INTO contacts (firstName, lastName, email, phone) VALUES (?, ?, ?,?)',
     [firstName, lastName ,email, phoneNumber],
     (error, results) => {
@@ -45,7 +36,7 @@ app.post('/api/contact', (req, res) => {
         console.error('Error while saving contact:', error);
         res.status(500).json({ error: 'Failed to save contact' });
       } else {
-        res.json({ message: 'Contact saved successfully' });
+        res.json({ results: 'Contact saved successfully' });
       }
     }
   );
